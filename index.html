@@ -1,1 +1,22 @@
-
+<html>
+        <body>
+                <h1> Register New Customer </h1>
+                <form name="input" action="register.php" method="get">
+                        First Name: <input type="text" name="fname"><br>
+                        Last Name: <input type="text" name="lname"><br>
+                        Phone Number: <input type="text" name="phone"><br>
+                        Email Address: <input type="text" name="email"><br>
+                        Gender:<br>
+                        <input type="radio" name="gender" value="f"> Female<br>
+                        <input type="radio" name="gender" value="m"> Male<br>
+                        <input type="radio" name="gender" value="o"> Others<br>
+                        <input type="radio" name="gender" value="n"> Prefer not to say<br>
+                        <input type="submit" value="Submit">
+                </form>
+                <h1> Search Customer by Phone</h1>
+                <form name="input" action="find_by_phone.php" method="get">
+                        Phone Number: <input type="text" name="phone"><br>
+                        <input type="submit" value="Submit">
+                </form>
+        </body>
+</html>
