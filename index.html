@@ -18,5 +18,191 @@
                         Phone Number: <input type="text" name="phone"><br>
                         <input type="submit" value="Submit">
                 </form>
+                <h1> All Customers</h1>
+                Click <a href="list_all_customets.php"> here </a> to list all customers in a table.
         </body>
+</html>
+
+
+
+
+<html>
+<body>
+<?php
+
+$link = mysqli_connect($host, $username, $password, $database);
+
+// Check connection
+if (!$link) {
+    echo("Connection failed: " . mysqli_connect_error());
+}
+echo "Connected successfully <br>";
+
+$sql = "CREATE TABLE IF NOT EXISTS customers (
+    fname VARCHAR(30),
+    lname VARCHAR(30),
+    phone CHAR(10) PRIMARY KEY,
+    email VARCHAR(50),
+    gender CHAR(1)
+);";
+mysqli_query($link, $sql);
+
+$fname = $_GET["fname"];
+$lname = $_GET["lname"];
+$phone = $_GET["phone"];
+$email = $_GET["email"];
+$gender = $_GET["gender"];
+
+
+$sql = "INSERT INTO customers (fname, lname, phone, email, gender) VALUES (?, ?, ?, ?, ?)";
+$stmt = mysqli_prepare($link, $sql);
+
+
+mysqli_stmt_bind_param($stmt, "sssss", $fname, $lname, $phone, $email, $gender); 
+
+// Execute the statement
+try {
+
+    mysqli_stmt_execute($stmt);
+    echo "Customer registered successfully.";
+
+} catch (mysqli_sql_exception $e) {
+
+    if ($e->getCode() == 1062) {
+        echo "<b>Error:</b> This phone number is already registered.";
+    } else {
+        echo "Database error: " . $e->getMessage();
+    }
+
+}
+mysqli_close($link);
+
+
+?>
+<a href="customers.html">Go Home</a>
+</body>
+</html>
+
+
+
+<html>
+<body>
+<?php
+
+$link = mysqli_connect($host, $username, $password, $database);
+
+// Check connection
+if (!$link) {
+    echo("Connection failed: " . mysqli_connect_error());
+}
+echo "Connected successfully <br>";
+
+$sql = "SELECT * FROM customers
+    WHERE phone=?;";
+
+$phone = $_GET["phone"];
+
+$stmt = mysqli_prepare($link, $sql);
+
+mysqli_stmt_bind_param($stmt, "s", $phone); 
+
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+        
+if ($result) {
+    if(mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $cnt = 1;
+                echo "First Name: " . $row["fname"] . "<br>";
+                echo "Last Name: " . $row["lname"] . "<br>";
+                echo "Phone: " . $row["phone"] . "<br>";
+                echo "email: " . $row["email"] . "<br>";
+                $gender = $row["gender"];
+                if($gender=="m")
+                        echo "Gender: Male";
+                if($gender=="f")
+                        echo "Gender: Female";
+                if($gender=="o")
+                        echo "Gender: Others";
+                if($gender=="n")
+                        echo "Gender: did not specified";
+            }
+    }
+    else
+            echo "Was not able to find a customer with phone number ". $phone ."!<br>";
+} else {
+    echo "Query failed: " . mysqli_error($link);
+}
+        
+        
+mysqli_close($link);
+
+
+?>
+<a href="customers.html">Go Home</a>
+</body>
+</html>
+
+
+
+<html>
+<head>
+<style>
+table, th, td {
+  border: 1px solid black; 
+  border-collapse: collapse; 
+  padding: 8px; 
+}
+</style>
+</head>
+<body>
+<?php
+$link = mysqli_connect($host, $username, $password, $database);
+
+// Check connection
+if (!$link) {
+    echo("Connection failed: " . mysqli_connect_error());
+}
+echo "Connected successfully <br>";
+
+$sql = "SELECT * FROM customers ORDER BY lname,fname;";
+
+$result = mysqli_query($link, $sql);
+
+if ($result) {
+	echo "<table>";
+	echo "<tr>";
+	echo "<td>First Name</td><td>Last Name</td><td>phone</td><td>email</td><td>Gender</td>";
+	echo "</tr>";
+    while ($row = mysqli_fetch_assoc($result)) {
+        echo "<tr>";
+        echo "<td>" . $row["fname"] . "</td>";
+        echo "<td>" . $row["lname"] . "</td>";
+        echo "<td>" . $row["phone"] . "</td>";
+        echo "<td>" . $row["email"] . "</td>";
+        $gender = $row["gender"];
+        echo "<td>";
+        if($gender=="m")
+                echo "Male";
+        if($gender=="f")
+                echo "Female";
+        if($gender=="o")
+                echo "Others";
+        if($gender=="n")
+                echo "  ---  ";
+        echo "</td>";
+        echo "</tr>";
+    }
+	echo "</table>";
+} else {
+    echo "Query failed: " . mysqli_error($link);
+}
+        
+        
+mysqli_close($link);
+
+
+?>
+<a href="customers.html">Go Home</a>
+</body>
 </html>
